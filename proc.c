@@ -7,6 +7,12 @@
 #include "proc.h"
 #include "spinlock.h"
 
+//definição do numero maximo e minimo de tickets de um processo
+#define MAXTICK       100
+#define MINTICK        10
+
+
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -138,7 +144,7 @@ growproc(int n)
 // Sets up stack to return as if from system call.
 // Caller must set state of returned proc to RUNNABLE.
 int
-fork(void)
+fork(int tick)
 {
   int i, pid;
   struct proc *np;
@@ -168,6 +174,14 @@ fork(void)
   np->cwd = idup(proc->cwd);
 
   safestrcpy(np->name, proc->name, sizeof(proc->name));
+
+  if(tick < MINTICK){
+    np->ptick=MINTICK;
+  }else if(tick > MAXTICK){
+    np->ptick=MAXTICK;
+  }else{
+    np->ptick=tick;
+  }
 
   pid = np->pid;
 

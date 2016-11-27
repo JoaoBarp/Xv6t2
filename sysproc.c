@@ -8,9 +8,10 @@
 #include "proc.h"
 
 int
-sys_fork(void)
-{
-  return fork();
+sys_fork(void){
+  int Tic;
+  argint(0, &Tic); 
+  return fork(Tic);
 }
 
 int

@@ -6,11 +6,11 @@
 void f1(void);
 
 int main (int argh,char *argv[]){
-	//int p[3];
+	int p[argh];
 	int j;
-	for(j=0;j<3;j++){      //Cria os filhos com a quantidade de argumeentos de "argh"
-	 // p[j]=atoi(argv[j]);    //Converte char pra int
-	  if(fork()==0){     //Cria filhos
+	for(j=0;j<argh;j++){      //Cria os filhos com a quantidade de argumeentos de "argh"
+	  p[j]=atoi(argv[j]);    //Converte char pra int
+	  if(fork(p[j])==0){     //Cria filhos
 	      f1();              //comendo tempo
 	      exit(); 
      }
