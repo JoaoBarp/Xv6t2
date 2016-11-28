@@ -39,25 +39,31 @@ int buscaMaisDeumpassoZero(){
 	int count=0;
 	struct proc *p;
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-		if(p->cpasso == 0){count++;}
+		if(p->cpasso == 0 && p->state == RUNNABLE){count++;}
 	}	
 	if(count > 2){return 1;}
 	else{return 0;}
 }
 
 
-BuscaMaiorPasso(){
+int BuscaMaiorPasso(){
+	int count=9999999;
+	struct proc *p;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){		
+		if(count > p->cpasso && p->state == RUNNABLE){count=p->cpasso;}
+	}
 
-struct proc *p;
-for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){}
-
+	return count;
 }
 
 BuscamaiorPIDcomPasso=Zero(){
+	int count=999999;
+	struct proc *p;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if(count > p->pid && p->cpasso == 0 && p->state == RUNNABLE){count=p->pid;}
+	}
 
-struct proc *p;
-for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){}
-
+	return count;
 }
 
 
@@ -75,7 +81,7 @@ scheduler(void)
     sti();
     acquire(&ptable.lock);
 
-    if(buscaMaisDeumpassoZero() == TRUE){
+    if(buscaMaisDeumpassoZero() == 1){
 		MPid=BuscamaiorPIDcomPasso=Zero();
 		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     		if(p->state == RUNNABLE && p->pid == MPid){
