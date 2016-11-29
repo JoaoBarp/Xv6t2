@@ -8,9 +8,9 @@
 #include "spinlock.h"
 
 //definição do numero maximo e minimo de tickets de um processo
-#define MAXTICK       100
-#define MINTICK        10
-
+#define MAXTICK       1000
+#define MINTICK        100
+#define CONST         10000
 
 
 struct {
@@ -182,7 +182,8 @@ fork(int tick)
   }else{
     np->ptick=tick;
   }
-    
+		//cprintf(" ooooooooooooooooooooi %d  ",np->ptick);
+
   np->cpasso=0;
    
   pid = np->pid;
@@ -284,6 +285,55 @@ wait(void)
   }
 }
 
+
+
+
+
+
+
+
+
+
+int buscaMaisDeumpassoZero(){
+	int count=0;
+	struct proc *p;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if(p->cpasso == 0 && p->state == RUNNABLE){count++;}
+	}	
+//cprintf("%d OOOOI",count);
+	if(count > 1){return 1;}
+	else{return 0;}
+}
+
+
+int BuscaMenorPasso(){
+	int count=9999999;
+	struct proc *p;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){		
+		if(count > p->cpasso && p->state == RUNNABLE){count=p->cpasso;}
+//cprintf("  %d OOOOI  ",count);
+	}
+	return count;
+}
+
+int BuscamaiorPIDcomPassoZero(){
+	int count=0;
+	struct proc *p;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if(count > p->pid && p->cpasso == 0 && p->state == RUNNABLE){count=p->pid;}
+	}
+
+	return count;
+}
+
+
+
+
+
+
+
+
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -293,37 +343,36 @@ wait(void)
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
 void
-scheduler(void)
-{
-  struct proc *p;
+scheduler(void){
+	struct proc *p;
+	int pass;
+	for(;;){
+   		sti();
+    	acquire(&ptable.lock);
+		pass=BuscaMenorPasso();
+		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+			if(p->state == RUNNABLE && p->cpasso == pass){
+        		break;
+	    	}
+	  	}
+		if(p->state == RUNNABLE){
+			if(p->ptick != 0){
+				p->cpasso = p->cpasso + (CONST/p->ptick);
+			}
+			p->sorteios++;
+			cprintf("\n  %s  %d  %d",p->name, p->ptick, p->sorteios);
+			proc = p;
+			switchuvm(p);
+			p->state = RUNNING;
+			swtch(&cpu->scheduler, p->context);
+			switchkvm();
+			proc = 0;
+		}
+		release(&ptable.lock);
 
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
-
-    // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.	
-      proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      swtch(&cpu->scheduler, p->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      proc = 0;
-    }
-    release(&ptable.lock);
-
-  }
+	}
 }
+
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
