@@ -1,7 +1,8 @@
 #include "types.h"
 #include "user.h"
 #include "syscall.h" 
- 
+
+#define haha 4999999990 
  
 void f1(void);
 
@@ -16,15 +17,15 @@ int main (int argh,char *argv[]){
      }
     }
 
-	for(j=0;j<100000;j++) {
+	for(j=0;j<100;j++) {
 		wait();             //esperando os filhos
 	}
 	exit();                 
 }
 
 void f1(void){
-	int i=0;	
-	while(i<5900000000){
+	int i=0; 	
+	while(i<haha){
 		i++;
 	}
 }

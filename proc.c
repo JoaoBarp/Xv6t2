@@ -317,10 +317,10 @@ int BuscaMenorPasso(){
 }
 
 int BuscamaiorPIDcomPassoZero(){
-	int count=0;
+	int count=-1;
 	struct proc *p;
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-		if(count > p->pid && p->cpasso == 0 && p->state == RUNNABLE){count=p->pid;}
+		if(count < p->pid && p->cpasso == 0 && p->state == RUNNABLE){count=p->pid;}
 	}
 
 	return count;
@@ -345,22 +345,36 @@ int BuscamaiorPIDcomPassoZero(){
 void
 scheduler(void){
 	struct proc *p;
-	int pass;
+	int pass,PID;
 	for(;;){
    		sti();
     	acquire(&ptable.lock);
-		pass=BuscaMenorPasso();
-		for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-			if(p->state == RUNNABLE && p->cpasso == pass){
-        		break;
-	    	}
-	  	}
+
+		if(buscaMaisDeumpassoZero() == 1){
+			PID=BuscamaiorPIDcomPassoZero();
+			for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+				if(p->state == RUNNABLE && p->pid == PID){
+        			break;
+	    		}	
+			}	
+		}else{
+			pass=BuscaMenorPasso();
+			for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+				if(p->state == RUNNABLE && p->cpasso == pass){
+        			break;
+	    		}
+	  		}
+		}
 		if(p->state == RUNNABLE){
 			if(p->ptick != 0){
 				p->cpasso = p->cpasso + (CONST/p->ptick);
 			}
 			p->sorteios++;
-			cprintf("\n  %s  %d  %d",p->name, p->ptick, p->sorteios);
+
+			if(strncmp(p->name,"teste",7) == 0){
+				cprintf("\n Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",p->name,p->pid ,p->ptick, p->sorteios);
+			}
+
 			proc = p;
 			switchuvm(p);
 			p->state = RUNNING;
