@@ -182,8 +182,9 @@ fork(int tick)
   }else{
     np->ptick=tick;
   }
-		//cprintf(" ooooooooooooooooooooi %d  ",np->ptick);
-
+  if(strncmp(np->name,"teste",7) == 0){
+	cprintf("\nFoi criado o processo - Nome: %s  PID: %d  NTick: %d   ",np->name,np->pid ,np->ptick, np->sorteios);
+  }
   np->cpasso=0;
    
   pid = np->pid;
@@ -205,7 +206,7 @@ exit(void)
 {
   struct proc *p;
   int fd;
-
+	cprintf("\nTerminado -  Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",proc->name,proc->pid ,proc->ptick, proc->sorteios);
   if(proc == initproc)
     panic("init exiting");
 
@@ -371,9 +372,9 @@ scheduler(void){
 			}
 			p->sorteios++;
 
-			if(strncmp(p->name,"teste",7) == 0){
-				cprintf("\n Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",p->name,p->pid ,p->ptick, p->sorteios);
-			}
+			//if(strncmp(p->name,"teste",7) == 0){
+			//	cprintf("\n Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",p->name,p->pid ,p->ptick, p->sorteios);
+			//}
 
 			proc = p;
 			switchuvm(p);

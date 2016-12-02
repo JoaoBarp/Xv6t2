@@ -2,7 +2,7 @@
 #include "user.h"
 #include "syscall.h" 
 
-#define haha 4999999990 
+#define haha 2147483649LL
  
 void f1(void);
 
@@ -17,10 +17,8 @@ int main (int argh,char *argv[]){
      }
     }
 
-	for(j=0;j<100;j++) {
-		wait();             //esperando os filhos
-	}
-	exit();                 
+	while(wait() != -1);   
+	exit();             
 }
 
 void f1(void){
