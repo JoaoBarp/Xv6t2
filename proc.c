@@ -206,7 +206,7 @@ exit(void)
 {
   struct proc *p;
   int fd;
-	cprintf("\nTerminado -  Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",proc->name,proc->pid ,proc->ptick, proc->sorteios);
+
   if(proc == initproc)
     panic("init exiting");
 
@@ -236,7 +236,7 @@ exit(void)
         wakeup1(initproc);
     }
   }
-
+cprintf("\nTerminado -  Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",proc->name,proc->pid ,proc->ptick, proc->sorteios);
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
   sched();
@@ -312,7 +312,6 @@ int BuscaMenorPasso(){
 	struct proc *p;
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){		
 		if(count > p->cpasso && p->state == RUNNABLE){count=p->cpasso;}
-//cprintf("  %d OOOOI  ",count);
 	}
 	return count;
 }
@@ -346,35 +345,36 @@ int BuscamaiorPIDcomPassoZero(){
 void
 scheduler(void){
 	struct proc *p;
-	int pass,PID;
+	int pass;
 	for(;;){
    		sti();
     	acquire(&ptable.lock);
 
-		if(buscaMaisDeumpassoZero() == 1){
-			PID=BuscamaiorPIDcomPassoZero();
-			for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-				if(p->state == RUNNABLE && p->pid == PID){
-        			break;
-	    		}	
-			}	
-		}else{
+		//if(buscaMaisDeumpassoZero() == 1){
+		//	PID=BuscamaiorPIDcomPassoZero();
+		//	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		//		if(p->state == RUNNABLE && p->pid == PID){
+        //			break;
+	    //		}	
+		//	}	
+		//}else{
+
 			pass=BuscaMenorPasso();
 			for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 				if(p->state == RUNNABLE && p->cpasso == pass){
         			break;
 	    		}
 	  		}
-		}
+		//}
 		if(p->state == RUNNABLE){
 			if(p->ptick != 0){
 				p->cpasso = p->cpasso + (CONST/p->ptick);
 			}
 			p->sorteios++;
 
-			//if(strncmp(p->name,"teste",7) == 0){
-			//	cprintf("\n Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",p->name,p->pid ,p->ptick, p->sorteios);
-			//}
+			if(strncmp(p->name,"teste",7) == 0){
+			//cprintf("\n Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",p->name,p->pid ,p->ptick, p->sorteios);
+			}
 
 			proc = p;
 			switchuvm(p);
