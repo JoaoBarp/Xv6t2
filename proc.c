@@ -143,9 +143,7 @@ growproc(int n)
 // Create a new process copying p as the parent.
 // Sets up stack to return as if from system call.
 // Caller must set state of returned proc to RUNNABLE.
-int
-fork(int tick)
-{
+int fork(int tick){
   int i, pid;
   struct proc *np;
 
@@ -182,6 +180,7 @@ fork(int tick)
   }else{
     np->ptick=tick;
   }
+
   if(strncmp(np->name,"teste",7) == 0){
 	cprintf("\nFoi criado o processo - Nome: %s  PID: %d  NTick: %d   ",np->name,np->pid ,np->ptick, np->sorteios);
   }
@@ -235,8 +234,10 @@ exit(void)
       if(p->state == ZOMBIE)
         wakeup1(initproc);
     }
-  }
-cprintf("\nTerminado -  Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",proc->name,proc->pid ,proc->ptick, proc->sorteios);
+  } 
+
+  cprintf("\nTerminado -  Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",proc->name,proc->pid ,proc->ptick, proc->sorteios);
+
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
   sched();
@@ -301,7 +302,6 @@ int buscaMaisDeumpassoZero(){
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 		if(p->cpasso == 0 && p->state == RUNNABLE){count++;}
 	}	
-//cprintf("%d OOOOI",count);
 	if(count > 1){return 1;}
 	else{return 0;}
 }
@@ -342,40 +342,27 @@ int BuscamaiorPIDcomPassoZero(){
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
-void
-scheduler(void){
+void scheduler(void){
 	struct proc *p;
 	int pass;
 	for(;;){
    		sti();
     	acquire(&ptable.lock);
-
-		//if(buscaMaisDeumpassoZero() == 1){
-		//	PID=BuscamaiorPIDcomPassoZero();
-		//	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-		//		if(p->state == RUNNABLE && p->pid == PID){
-        //			break;
-	    //		}	
-		//	}	
-		//}else{
-
 			pass=BuscaMenorPasso();
 			for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 				if(p->state == RUNNABLE && p->cpasso == pass){
         			break;
 	    		}
 	  		}
-		//}
 		if(p->state == RUNNABLE){
+
 			if(p->ptick != 0){
 				p->cpasso = p->cpasso + (CONST/p->ptick);
 			}
 			p->sorteios++;
-
-			if(strncmp(p->name,"teste",7) == 0){
+			//if(strncmp(p->name,"teste",7) == 0){
 			//cprintf("\n Nome: %s  PID: %d  NTick: %d  Sorteios: %d  ",p->name,p->pid ,p->ptick, p->sorteios);
-			}
-
+			//}
 			proc = p;
 			switchuvm(p);
 			p->state = RUNNING;

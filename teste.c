@@ -17,10 +17,8 @@ int main (int argh,char *argv[]){
 	  if(fork(p[j])==0){      //Cria filhos
 	      f1();               //comendo tempo
 	      exit(); 
-     }
+      }
     }
-
-
 
 	while(wait() != -1);   
 	exit();             
@@ -30,10 +28,10 @@ void f1(void){
 	int i=0; 	
 	while(i<haha){
 		int fd = 0;
-       fd = open( "", O_CREATE );
-       if( fd >= 0 ) {
+        fd = open( "", O_CREATE );
+        if( fd >= 0 ) {
             close(fd);
-       }
+        }
 		i++;
 	}
 }
